@@ -31,7 +31,7 @@ python run_demo.py
 (Optional) To run with a Realsense camera:
 ```sh
 pip install pyrealsense2
-
+python realsense_demo.py 
 ```
 
 
