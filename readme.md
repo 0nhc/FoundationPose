@@ -1,6 +1,6 @@
 # Customized FoundationPose with RTX 40 Series GPU and CUDA 12.1
 
-This is my customized repo for FoundationPose running on RTX 40 Series GPU with CUDA 12.1. See detailed [README](original_readme.md).
+This is my customized repo for FoundationPose running on RTX 40 Series GPU with CUDA 12.1. See detailed original [README](original_readme.md).
 
 ## Installation
 To install Python environment:
