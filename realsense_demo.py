@@ -51,7 +51,8 @@ def build_mask_from_roi(depth_meters, roi, min_depth=0.05, max_depth=5.0):
 def main():
     parser = argparse.ArgumentParser()
     code_dir = os.path.dirname(os.path.realpath(__file__))
-    parser.add_argument('--mesh_file', type=str, default=f'{code_dir}/demo_data/mustard0/mesh/textured_simple.obj')
+    # parser.add_argument('--mesh_file', type=str, default=f'{code_dir}/demo_data/mustard0/mesh/textured_simple.obj')
+    parser.add_argument('--mesh_file', type=str, default=f'/home/zhengxiao-han/projects/ovo_frito/outputs/any6d_model.obj')
     parser.add_argument('--est_refine_iter', type=int, default=5)
     parser.add_argument('--track_refine_iter', type=int, default=2)
     parser.add_argument('--debug', type=int, default=1)
@@ -136,6 +137,12 @@ def main():
     t_last = time.time()
     roi = None
 
+    # --- VIDEO RECORDING VARS ---
+    recording_frames = []
+    recording_start_time = None
+    RECORD_DURATION = 10.0  # seconds
+    video_saved = False
+
     try:
         while True:
             frames = pipeline.wait_for_frames()
@@ -194,9 +201,46 @@ def main():
                 vis, ob_in_cam=center_pose, scale=0.1, K=K,
                 thickness=3, transparency=0, is_input_rgb=True
             )
-            cv2.putText(vis, f"FPS: {1.0/max(1e-6, time.time()-t_last):.1f}",
+            
+            # FPS calculation
+            fps = 1.0/max(1e-6, time.time()-t_last)
+            cv2.putText(vis, f"FPS: {fps:.1f}",
                         (12, 28), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 0), 2, cv2.LINE_AA)
             t_last = time.time()
+
+            # --- RECORDING LOGIC ---
+            # Only record if tracking (pose is valid) and we haven't saved yet
+            if pose is not None and not video_saved:
+                if recording_start_time is None:
+                    recording_start_time = time.time()
+                    logging.info("Tracking started: Recording video...")
+                
+                # Append current frame (Convert RGB 'vis' back to BGR for VideoWriter)
+                recording_frames.append(vis[..., ::-1])
+
+                # Check duration
+                elapsed = time.time() - recording_start_time
+                remaining = max(0, RECORD_DURATION - elapsed)
+                cv2.putText(vis, f"REC: {remaining:.1f}s", (12, 60), 
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
+
+                if elapsed >= RECORD_DURATION:
+                    logging.info(f"10 seconds reached. Saving {len(recording_frames)} frames...")
+                    
+                    video_path = os.path.join(debug_dir, "tracking_result.mp4")
+                    height, width, _ = recording_frames[0].shape
+                    
+                    # Initialize VideoWriter
+                    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+                    out = cv2.VideoWriter(video_path, fourcc, args.fps, (width, height))
+                    
+                    for f in recording_frames:
+                        out.write(f)
+                    out.release()
+                    
+                    logging.info(f"Video saved successfully to: {video_path}")
+                    video_saved = True
+                    break  # Exit the loop after saving
 
             if debug >= 1:
                 cv2.imshow('FoundationPose Live', vis[..., ::-1])  # RGB -> BGR for OpenCV window
@@ -206,8 +250,13 @@ def main():
                 elif k == ord('r'):  # re-register
                     pose = None
                     roi = None
+                    # Reset recording if re-registering
+                    recording_frames = []
+                    recording_start_time = None
+                    video_saved = False
 
-            if debug >= 2:
+            if debug >= 2 and not video_saved:
+                # Still saving individual frames if debug level is high
                 imageio.imwrite(f'{debug_dir}/track_vis/{frame_id:06d}.png', vis)
 
             frame_id += 1
