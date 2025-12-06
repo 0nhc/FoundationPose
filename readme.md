@@ -7,8 +7,8 @@ To install Python environment:
 ```sh
 conda create -n foundationpose python=3.10 # The same system Python version as Ubuntu 22.04
 conda activate foundationpose
-conda install conda-forge::eigen=3.4.0
-export CMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH:/eigen/path/under/conda"
+conda install -c conda-forge eigen=3.4.0 boost boost-cpp cuda-toolkit=12.1
+
 python -m pip install -r requirements.txt
 python -m pip install --quiet --no-cache-dir git+https://github.com/NVlabs/nvdiffrast.git
 
