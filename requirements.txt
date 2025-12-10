@@ -82,3 +82,4 @@ typeguard==4.4.4
 jupyter-client==8.0.0
 pyzmq==25.0.0
 ipykernel==7.1.0
+gdown==5.2.0

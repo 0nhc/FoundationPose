@@ -16,9 +16,11 @@ python -m pip install --quiet --no-cache-dir git+https://github.com/NVlabs/nvdif
 pip install --extra-index-url https://miropsota.github.io/torch_packages_builder pytorch3d==0.7.8+5043d15pt2.1.0cu121 
 
 CMAKE_PREFIX_PATH=$CONDA_PREFIX/lib/python3.10/site-packages/pybind11/share/cmake/pybind11 bash build_all_conda.sh
-```
 
-Download weights from [https://drive.google.com/drive/folders/1BEQLZH69UO5EOfah-K9bfI3JyP9Hf7wC?usp=drive_link](https://drive.google.com/drive/folders/1BEQLZH69UO5EOfah-K9bfI3JyP9Hf7wC?usp=drive_link). Unzip and put them into `./weights/`. Rename the folder names as `2023-10-28-18-33-37` and `2024-01-11-20-02-45`.
+# Download weights
+cd weights
+./download_weights.sh
+```
 
 Download demo data from [https://drive.google.com/drive/folders/1pRyFmxYXmAnpku7nGRioZaKrVJtIsroP?usp=sharing](https://drive.google.com/drive/folders/1pRyFmxYXmAnpku7nGRioZaKrVJtIsroP?usp=sharing). Unzip and put them into `./demo_data/`.
 
