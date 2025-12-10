@@ -5,9 +5,9 @@ This is my customized repo for FoundationPose running on RTX 40 Series GPU with 
 ## Installation
 To install Python environment:
 ```sh
-conda create -n foundationpose python=3.10 # The same system Python version as Ubuntu 22.04
-conda activate foundationpose
-conda install -c conda-forge eigen=3.4.0 boost boost-cpp cuda-toolkit=12.1
+micromamba create -n foundationpose python=3.10
+micromamba activate foundationpose
+micromamba install -c conda-forge eigen=3.4.0 boost cuda-toolkit=12.1
 
 python -m pip install -r requirements.txt
 python -m pip install --quiet --no-cache-dir git+https://github.com/NVlabs/nvdiffrast.git
